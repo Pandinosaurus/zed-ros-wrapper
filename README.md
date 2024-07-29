@@ -1,12 +1,13 @@
-![](./images/Picto+STEREOLABS_Black.jpg)
+<h1 align="center">
+   <img src="./images/Picto+STEREOLABS_Black.jpg" alt="Stereolabs" title="Stereolabs" /><br \>
+   ROS Noetic Ninjemis Integration
+</h1>
 
-# Stereolabs ZED Camera - ROS Noetic Ninjemis Integration
-
-This package lets you use the ZED stereo camera with ROS. It outputs the camera left and right images, depth map, point cloud, pose information and supports the use of multiple ZED cameras.
+This package lets you use the ZED stereo camera with ROS. It outputs the camera's left and right images, depth map, point cloud, and pose information and supports the use of multiple ZED cameras.
 
 [More information](https://www.stereolabs.com/documentation/guides/using-zed-with-ros/introduction.html)
 
-**Note:** The `zed_interfaces` package has been removed from this repository and moved to its own [`zed-ros-interfaces` repository](https://github.com/stereolabs/zed-ros-interfaces) for allowing better integration of the ZED Wrapper on remote ground stations that do not require the full package to be installed. To update your repository please follow the [new update instructions](https://github.com/stereolabs/zed-ros-wrapper#update-the-repository). For more information please read issue [#750](https://github.com/stereolabs/zed-ros-wrapper/issues/750).
+**Note:** The `zed_interfaces` package has been removed from this repository and moved to its own [`zed-ros-interfaces` repository](https://github.com/stereolabs/zed-ros-interfaces) to allow better integration of the ZED Wrapper on remote ground stations that do not require the full package to be installed. To update your repository please follow the [new update instructions](https://github.com/stereolabs/zed-ros-wrapper#update-the-repository). For more information please read issue [#750](https://github.com/stereolabs/zed-ros-wrapper/issues/750).
 
 ## Getting started
 
@@ -17,36 +18,28 @@ This package lets you use the ZED stereo camera with ROS. It outputs the camera 
 ### Prerequisites
 
 - Ubuntu 20.04
-- [ZED SDK **≥ 3.7**](https://www.stereolabs.com/developers/) and its dependency [CUDA](https://developer.nvidia.com/cuda-downloads)
+- [ZED SDK **v4.1**](https://www.stereolabs.com/developers/) and its dependency [CUDA](https://developer.nvidia.com/cuda-downloads)
 - [ROS Noetic](http://wiki.ros.org/noetic/Installation/Ubuntu)
-
-or
-
-- Ubuntu 18.04
-- [ZED SDK **≥ 3.7**](https://www.stereolabs.com/developers/) and its dependency [CUDA](https://developer.nvidia.com/cuda-downloads)
-- [ROS Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu)
 
 ### Build the repository
 
 The zed_ros_wrapper is a catkin package. It depends on the following ROS packages:
 
-   - nav_msgs
-   - tf2_geometry_msgs
-   - message_runtime
-   - catkin
-   - roscpp
-   - stereo_msgs
-   - rosconsole
-   - robot_state_publisher
-   - urdf
-   - sensor_msgs
-   - image_transport
-   - roslint
-   - diagnostic_updater
-   - dynamic_reconfigure
-   - tf2_ros
-   - message_generation
-   - nodelet
+ - roscpp
+- image_transport
+- rosconsole
+- sensor_msgs
+- stereo_msgs
+- std_msgs
+- std_srvs
+- message_filters
+- tf2_ros
+- nodelet
+- tf2_geometry_msgs
+- message_generation
+- diagnostic_updater    
+- dynamic_reconfigure
+- zed_interfaces
 
 Open a terminal, clone the repository, update the dependencies and build the packages:
 
@@ -68,8 +61,7 @@ Remember to always clean the cache of your catkin workspace before compiling wit
 
     $ roscd
     $ cd ..
-    $ rm -rf build
-    $ rm -rf devel
+    $ rm -rf build devel
     $ catkin_make -DCMAKE_BUILD_TYPE=Release
 
 ### Run the ZED wrapper
@@ -84,20 +76,28 @@ ZED Mini camera:
 
     $ roslaunch zed_wrapper zedm.launch
    
-ZED2 camera:
+ZED 2 camera:
 
     $ roslaunch zed_wrapper zed2.launch
 
-ZED2i camera:
+ZED 2i camera:
 
-    $ roslaunch zed_wrapper zed2i.launch    
+    $ roslaunch zed_wrapper zed2i.launch
 
- To select the ZED from its serial number:
+ZED X camera:
+
+    $ roslaunch zed_wrapper zedx.launch  
+
+ZED X Mini camera:
+
+    $ roslaunch zed_wrapper zedxm.launch  
+
+ To select the camera from its serial number:
  
      $ roslaunch zed_wrapper zed.launch serial_number:=1010 #replace 1010 with the actual SN
 
 ### Rviz visualization
-Example launch files to start a pre-configured Rviz environment to visualize the data of ZED, ZED Mini and ZED 2 cameras are provided in the [`zed-ros-examples` repository](https://github.com/stereolabs/zed-ros-examples/tree/master/zed_display_rviz)
+Example launch files to start a pre-configured Rviz environment to visualize the data of ZED, ZED Mini, ZED 2, ZED X, and ZED X Mini cameras are provided in the [`zed-ros-examples` repository](https://github.com/stereolabs/zed-ros-examples/tree/master/zed_display_rviz)
     
 ### SVO recording
 [SVO recording](https://www.stereolabs.com/docs/video/#video-recording) can be started and stopped while the ZED node is running using the service `start_svo_recording` and the service `stop_svo_recording`.
@@ -106,13 +106,19 @@ Example launch files to start a pre-configured Rviz environment to visualize the
 ### Object Detection
 The SDK v3.0 introduces the Object Detection and Tracking module. **The Object Detection module is available only with a ZED 2 camera**. 
 
-The Object Detection can be enabled *automatically* when the node start setting the parameter `object_detection/od_enabled` to `true` in the file `zed2.yaml`.
+The Object Detection can be enabled *automatically* when the node start setting the parameter `object_detection/od_enabled` to `true` in the file `common.yaml`.
 
-The Object Detection can be enabled/disabled *manually* calling the services `start_object_detection` and `stop_object_detection`.
+The Object Detection can be enabled/disabled *manually* calling the service `enable_object_detection`.
+
+### Body Tracking
+The Body Tracking module is not available for the ZED ROS Wrapper. Please consider migrating to the [ZED ROS2 Wrapper](https://github.com/stereolabs/zed-ros2-wrapper) if you need it.
 
 ### Spatial Mapping
 The Spatial Mapping can be enabled automatically when the node start setting the parameter `mapping/mapping_enabled` to `true` in the file `common.yaml`.
 The Spatial Mapping can be enabled/disabled manually calling the services `start_3d_mapping` and `stop_3d_mapping`.
+
+### Geo Tracking (GNSS Fusion)
+The Geo tracking module is not available for the ZED ROS Wrapper. Please consider migrating to the [ZED ROS2 Wrapper](https://github.com/stereolabs/zed-ros2-wrapper) if you need it.
 
 ### Diagnostic
 The ZED node publishes diagnostic information that can be used by the robotic system using a [diagnostic_aggregator node](http://wiki.ros.org/diagnostic_aggregator).
